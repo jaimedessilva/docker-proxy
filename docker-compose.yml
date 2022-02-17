@@ -1,0 +1,57 @@
+version: '3.7'
+services:
+  #Site 1
+  app1:
+    image: app/apache1
+    hostname: www.site.com
+    container_name: app1-httpd
+    volumes:
+      -  ./site1/public:/usr/local/apache2/htdocs
+      -  ./site1/conf:/usr/local/apache2/conf
+    build: 
+      context: ./site1 
+      dockerfile: 1.dockerfile   
+    ports: 
+      - 8081:8080
+    networks:
+      - app-network  
+  # Site 2    
+  app2:
+    image: app/apache2
+    hostname: www.site1.com
+    container_name: app2-httpd
+    build: 
+      context: ./site2
+      dockerfile: 2.dockerfile     
+    ports: 
+      - 8082:80
+    networks:
+      - app-network 
+  # Site 3    
+  app3:
+    image: app/apache3
+    container_name: app3-httpd
+    build:
+      context: ./site3
+      dockerfile: 3.dockerfile      
+    ports:
+      - 8083:80
+    networks:
+      - app-network    
+  #reverse:
+  #  image: nginx
+  #  container_name: reverse-proxy
+  #  hostname: proxy
+  #  ports:
+  #    - 9000:80
+  #  volumes:
+  #    - ./nginx-proxy/config:/etc/nginx
+  #    - ./nginx-proxy/config/sites-avaliable:/etc/nginx/sites-avaliable
+  #    - ./nginx-proxy/config/sites-enabled:/etc/nginx/sites-enabled
+  #    - ./nginx-proxy/html:/usr/share/nginx/html
+  #  networks:
+  #    - app-network
+networks:
+  app-network:
+    name: app-proxy-network
+    driver: bridge      
